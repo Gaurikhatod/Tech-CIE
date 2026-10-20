@@ -1,0 +1,329 @@
+@model IEnumerable<Participant>
+
+@{
+ViewData["Title"] = "Participants";
+
+
+var participants = Model.ToList();
+var confirmed = participants.Count(
+    p => p.GetRegistrationStatus() == "Confirmed");
+
+var totalFees = participants.Sum(
+    p => p.RegistrationFee ?? 0);
+
+
+}
+
+<div class="d-flex
+            justify-content-between
+            align-items-center
+            flex-wrap
+            gap-3
+            mb-5">
+
+```
+<div>
+
+    <div class="section-label">
+        FEST MANAGEMENT
+    </div>
+
+    <h1 class="fw-bold mt-2 mb-1">
+        Participant Dashboard
+    </h1>
+
+    <p class="text-muted mb-0">
+        Manage and view technical fest registrations.
+    </p>
+
+</div>
+
+<a asp-controller="Fest"
+   asp-action="Register"
+   class="btn btn-primary">
+
+    + New Registration
+
+</a>
+```
+
+</div>
+
+<!-- STATISTICS -->
+
+<div class="row g-3 mb-5">
+
+```
+<div class="col-md-4">
+
+    <div class="stat-card">
+
+        <div class="stat-number">
+            @participants.Count
+        </div>
+
+        <div class="stat-label">
+            Total Participants
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="col-md-4">
+
+    <div class="stat-card">
+
+        <div class="stat-number text-success">
+            @confirmed
+        </div>
+
+        <div class="stat-label">
+            Confirmed Registrations
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="col-md-4">
+
+    <div class="stat-card">
+
+        <div class="stat-number">
+            ₹@totalFees
+        </div>
+
+        <div class="stat-label">
+            Registration Revenue
+        </div>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{ <div class="alert alert-success
+             alert-dismissible
+             fade
+             show
+             mb-4">
+
+```
+    <strong>Registration successful!</strong>
+
+    @TempData["SuccessMessage"]
+
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="alert">
+    </button>
+
+</div>
+
+
+}
+
+@if (!participants.Any())
+{ <div class="modern-card p-5 text-center">
+
+```
+    <div class="display-4 mb-3">
+        📋
+    </div>
+
+    <h3 class="fw-bold">
+        No registrations yet
+    </h3>
+
+    <p class="text-muted">
+        Start by registering the first participant.
+    </p>
+
+    <a asp-controller="Fest"
+       asp-action="Register"
+       class="btn btn-primary mt-2">
+
+        Register Participant
+
+    </a>
+
+</div>
+
+
+}
+else
+{ <div class="table-card">
+
+```
+    <div class="p-4
+                border-bottom
+                d-flex
+                justify-content-between
+                align-items-center">
+
+        <div>
+
+            <h5 class="fw-bold mb-1">
+                All Registrations
+            </h5>
+
+            <small class="text-muted">
+                @participants.Count registration(s)
+            </small>
+
+        </div>
+
+        <span class="badge bg-light text-dark">
+            Live Data
+        </span>
+
+    </div>
+
+
+    <div class="table-responsive">
+
+        <table class="table">
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Participant</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Year</th>
+                    <th>Event</th>
+                    <th>Status</th>
+                    <th>Fee</th>
+                    <th>Category</th>
+                    <th></th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var participant in participants)
+                {
+                    var status =
+                        participant.GetRegistrationStatus();
+
+                    var category =
+                        participant.GetFeeCategory();
+
+                    <tr>
+
+                        <td>
+
+                            <span class="fw-bold">
+                                #@participant.ParticipantId
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <div class="fw-bold">
+                                @participant.ParticipantName
+                            </div>
+
+                        </td>
+
+                        <td>
+                            @participant.Email
+                        </td>
+
+                        <td>
+                            @participant.Department
+                        </td>
+
+                        <td>
+                            @participant.Year
+                        </td>
+
+                        <td>
+
+                            <span class="fw-semibold">
+                                @participant.EventName
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            @if (status == "Confirmed")
+                            {
+                                <span class="status-confirmed">
+                                    ● Confirmed
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="status-pending">
+                                    ● Pending
+                                </span>
+                            }
+
+                        </td>
+
+                        <td class="fw-bold">
+                            ₹@(participant.RegistrationFee ?? 0)
+                        </td>
+
+                        <td>
+
+                            @if (category == "Premium Event")
+                            {
+                                <span class="badge bg-dark">
+                                    Premium
+                                </span>
+                            }
+                            else if (category == "Standard Event")
+                            {
+                                <span class="badge bg-primary">
+                                    Standard
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">
+                                    Free
+                                </span>
+                            }
+
+                        </td>
+
+                        <td>
+
+                            <a asp-controller="Fest"
+                               asp-action="Details"
+                               asp-route-id="@participant.ParticipantId"
+                               class="btn btn-sm btn-outline-primary">
+
+                                View
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+}
