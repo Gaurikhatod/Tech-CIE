@@ -6,4 +6,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="__MACOSX/**" />
+    <Compile Remove="cie-project-main/**" />
+    <Content Remove="__MACOSX/**" />
+    <Content Remove="cie-project-main/**" />
+    <EmbeddedResource Remove="__MACOSX/**" />
+    <EmbeddedResource Remove="cie-project-main/**" />
+    <None Remove="__MACOSX/**" />
+    <None Remove="cie-project-main/**" />
+  </ItemGroup>
+
 </Project>
